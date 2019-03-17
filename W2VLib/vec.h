@@ -15,15 +15,17 @@ public:
     Vec(void);
     Vec(Vec&);
     Vec operator=(const Vec&);
+    Vec operator=(const Vec*);
     bool operator==(const Vec&);
-    T get(const int &i);
+    T getVal(const int &i);
+    Vec getAll();
     void set(const int &i, T val);
-    void set(Vec<T> &v);
+    void set(const Vec<T> &v);
     int Capacity() const;
     int Size() const;
     T& operator [](int);
     bool operator==(int);
-    void push_back(T);
+    void push_back(const T&);
     void clear();
     void create(const int &i);
     void remove(const int &i);
@@ -52,7 +54,8 @@ Vec<T>::Vec(int n)
 template <class  T>
 Vec<T>::~Vec(void)
 {
-    delete[] data;
+    if(this->size)
+        delete[] data;
 }
 
 template <class  T>
@@ -82,6 +85,21 @@ Vec<T> Vec<T>::operator=(const Vec&a)
 }
 
 template <class T>
+Vec<T> Vec<T>::operator=(const Vec *a)
+{
+    if (this->size)
+        delete[] this->data;
+    this->size = a->size;
+    this->cap = a->cap;
+    this->data = new T[this->cap];
+    for (int i = 0; i != this->size; ++i) {
+        this->data[i] = a->data[i];
+    }
+    return *this;
+}
+
+
+template <class T>
 bool Vec<T>::operator==(const Vec&v)
 {
     if (this->size == v.size)
@@ -99,7 +117,7 @@ bool Vec<T>::operator==(const Vec&v)
 }
 
 template <class T>
-Vec<T>::Vec(Vec&a) {
+Vec<T>::Vec(Vec &a) {
     this->size = a.Size();
     this->cap = a.Capacity();
     this->data = new T[this->cap];
@@ -109,8 +127,9 @@ Vec<T>::Vec(Vec&a) {
 }
 
 template <class T>
-void Vec<T>::push_back(T val) {
+void Vec<T>::push_back(const T &val) {
 
+    //T nVal(val);
     int s = this->size, c = this->cap;
     if (s >= c) {
         T* newdata;
@@ -189,10 +208,16 @@ void Vec<T>::create(const int &i) {
 }
 
 template <class  T>
-T Vec<T>::get(const int &i)
+T Vec<T>::getVal(const int &i)
 {
     T ret = this->data[i];
     return ret;
+}
+
+template <class  T>
+Vec<T> Vec<T>::getAll()
+{
+    return this;
 }
 
 template <class  T>
@@ -203,7 +228,7 @@ void Vec<T>::set(const int &i, T val)
 
 
 template <class  T>
-void Vec<T>::set(Vec<T> &v)
+void Vec<T>::set(const Vec<T> &v)
 {
     delete[] this->data;
     this->size = v.Size();
@@ -217,4 +242,4 @@ void Vec<T>::set(Vec<T> &v)
 
 
 
-#endif // VEC_H
+#endif //VEC_H

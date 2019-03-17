@@ -4,24 +4,24 @@
 //****************************** WORD ************************************************************
 
 
-Word::Word()
+Word::Word(void)
 {
     /*this->wordSize = 0;
 
     this->word = nullptr;
 
 
-    this->Vec = nullptr;*/
+    this->vec = nullptr;*/
     this->instance = 0;
     this->id = -1;
-    this->word = new Vec<int>();
-    this->Vec = new Vec<double>();
+   // this->word = new Vec<int>();
+   // this->vec = new Vec<double>();
 
 
     //this->VecSize = 0;
 }
 
-Word::Word(Vec<int> &word)
+Word::Word(const Vec<int> &word)
 {
 
     /*this->wordSize = getWLength(word);
@@ -29,46 +29,50 @@ Word::Word(Vec<int> &word)
     this->word = word;
 
 
-    this->Vec = nullptr;
+    this->vec = nullptr;
 
     this->VecSize = 0;*/
-    this->word = new Vec<int>();
-    this->word[0] = word;
+   // this->word = new Vec<int>();
+    this->word = word;
     this->instance = 0;
     this->id = -1;
-    this->Vec = new Vec<double>();
+    //this->vec = new Vec<double>();
 
 
+}
+
+Word::Word(int ch)
+{
+    //this->word = new Vec<int>();
+    this->word.push_back(ch);
+    this->instance = 0;
+    this->id = -1;
+    //this->vec = new Vec<double>();
+}
+
+Word::Word(const Word &w)
+{
+    this->id = w.id;
+    this->instance = w.instance;
+    //this->word = new Vec<int>();
+    this->word = w.word;
+    //this->vec = new Vec<double>();
+    this->vec = w.vec;
 }
 
 Word::~Word()
 {
     // deleteWord();
     // deleteVec();
-    delete this->word;
-    delete this->Vec;
+    //delete this->word;
+   // delete this->vec;
 }
 
 Word& Word::operator=(const Word &w)
 {
     this->id = w.id;
-    /*deleteWord();
-     this->word = new int[w.wordSize];
-     for (int i =0; i<w.wordSize; i++)
-         this->word[i] = w.word[i];
-
-     deleteVec();
-     this->Vec = new double[w.VecSize];
-     for(int i =0; i<w.VecSize; i++)
-     {
-         this->Vec[i] = w.Vec[i];
-     }
-
-     this->VecSize = w.VecSize;*/
-    delete this->word;
-    this->word[0] = w.word[0];
-    delete this->Vec;
-    this->Vec[0] = w.vector[0];
+    this->word = w.word;
+    this->vec = w.vec;
     this->instance = w.instance;
 
     return *this;
@@ -76,69 +80,34 @@ Word& Word::operator=(const Word &w)
 
 bool Word::operator==(const Word &w)
 {
-    /*if (this->word.Size() == w.word.Size())
-    {
-        for (int i=0; i<this->word.Size(); i++)
-        {
-            if (this->word[i] == w.word[i]) return false;
-        }
-        return true;
-    }
-    else {
-        return false;
-    }*/
-    return this->word[0] == w.word[0];
+    return this->word == w.word;
 }
 
-int Word::getWLength(const int *word)
+int Word::getWLength()
 {
-    if (word)
-    {
-        int len = 0;
-        for (; word[len] != -1; len++);
-        return len - 1;
-    }
-    else {
-        return this->word->Size();
-    }
+    return this->word.Size();
 }
 
-void Word::addChar(int ch)
-{
-    /*int n = this->word.Size() + 1;
-  int *newWord = new int[n];
-
-   for (int i=0; i<n-1; i++){
-       newWord[i]=word[i];
-   }
-   deleteWord();
-   this->wordSize=n;
-   newWord[n-1] = ch;
-   this->word = new int[n];
-   for (int i=0; i<n; i++)
-       this->word[i] = newWord[i];
-   //this->word = newWord;*/
-    this->word->push_back(ch);
-
+void Word::addChar(const int &ch)
+{   
+    this->word.push_back(ch);
 }
 
 Vec<int> Word::get()
 {
-    return this->word[0];
+    return this->word;
 }
 
-void Word::set(Vec<int> newWord)
+
+
+void Word::set(const Vec<int> &newWord)
 {
-    //deleteWord();
-    //this->word.Size() = getWLength(newWord);
-    this->word[0] = newWord;
+    this->word = newWord;
 }
 
-void Word::setVec(Vec<double> Vec)
-{
-    //deleteVec();
-    this->Vec[0] = Vec;
-    //this->VecSize = size;
+void Word::setVec(const Vec<double> &vec)
+{   
+    this->vec = vec;
 }
 
 void Word::addInstance()
@@ -155,10 +124,10 @@ void Word::decInstance()
 
 int Word::getC(const int &i)
 {
-    if (i < this->word->Size()) {
-        int *ret = new int();
-        ret[0] = this->word[0][0];
-        return ret[0];
+    if (i < this->word.Size()) {
+        int ret;
+        ret = this->word.getVal(0);
+        return ret;
     }
     else {
         return -1;
@@ -177,7 +146,7 @@ Sentence::~Sentence()
 
 }
 
-void Sentence::addWord(Word word)
+void Sentence::addWord(const Word &word)
 {
 
 }
@@ -189,19 +158,20 @@ void Sentence::delWord(const int &i)
 
 Vec<Word> Sentence::getWords()
 {
-    return this->words[0];
+    return this->words;
 }
 
 Vec<int> Sentence::getIDs()
 {
-    return this->IDs[0];
+    return this->IDs;
 }
 
 //******************************** LIST **************************************************************
-WordList::WordList(Vec<int> &text, TypeWords encoding, TypeWords language,
+WordList::WordList(Vec<int> &text, const int &stop_line, TypeWords encoding, TypeWords language,
     TypeWords type_tokens, bool other_chars)
 {
-    setupLanguage(language, encoding, type_tokens, other_chars);
+    setupLanguage(language, encoding, type_tokens, other_chars, stop_line);
+    //this->words = new Vec<Word>();
     textProcessing(text);
 }
 
@@ -215,90 +185,83 @@ WordList::~WordList()
 
          }
      }*/
+    //delete this->words;
 
 }
 
 void WordList::setupLanguage(const TypeWords &language, const TypeWords &encoding,
-    const TypeWords &type_tokens, const bool &other_chars)
+    const TypeWords &type_tokens, const bool &other_chars,const int &stop_line)
 {
     this->encoding = encoding;
     this->language = language;
     this->type_tokens = type_tokens;
     this->other_chars = other_chars;
-    switch (encoding) {
-    case TypeWords::UTF8: {
-        switch (language)
-        {
-        case TypeWords::RUS:
-            this->chars_interval[0] = 1040;
-            this->chars_interval[1] = 1103;
-            break;
-        case TypeWords::ENG:
-            this->chars_interval[0] = 65;
-            this->chars_interval[1] = 122;
-            break;
+    this->stop_line = stop_line;
 
+    switch (encoding) {
+        case TypeWords::UTF8: {
+            switch (language)
+            {
+            case TypeWords::RUS:
+                this->chars_interval[0] = 1040;
+                this->chars_interval[1] = 1103;
+                break;
+            case TypeWords::ENG:
+                this->chars_interval[0] = 65;
+                this->chars_interval[1] = 122;
+                break;
+
+            }
+            break;
         }
-        break;
-    }
     }
 
 }
 
 void WordList::textProcessing(Vec<int> &text)
 {
-    int i = 0;
-    while (text[i] != -1)
+
+    for (int i=0; i<text.Size(); i++)
     {
-        Vec<int> c(2);
-        c.push_back(text[i]);
-        c.push_back(-1);
-        Word nWord(c);
-        if (text[i] >= this->chars_interval[0] && text[i] <= this->chars_interval[1])
-            while (text[i] >= this->chars_interval[0] && text[i] <= this->chars_interval[1])
-            {
-                nWord.addChar(text[i]);
+
+        Vec<int> nw;
+        nw.push_back(text[i]);
+        bool first = true;
+        while (text[i] >= this->chars_interval[0] && text[i] <= this->chars_interval[1]
+               && i<text.Size())
+        {
+            if (!first){
+                nw.push_back(text[i]);
                 i++;
             }
-        else {
-            c[1] = '\0';
+            else {
+                i++;
+                first = false;
+            }
+
         }
-        AddWord(nWord, false);
-        i++;
+        Word nWord(nw);
+        AddWord(nWord, false);       
     }
     // Sort();
 }
 
 
 
-void WordList::AddWord(Word &word, const bool &sort)
+void WordList::AddWord(const Word &word, const bool &sort)
 {
-
-    if (!CheckWord(word)) {
-        /* Word *newList = new Word[this->sizeVocab+1];
-
-
-         if (this->words)
-         {
-             for (int i=0; i<this->sizeVocab; i++)
-                 newList[i] = this->words[i];
-             deleteWords();
-         }
-         newList[this->sizeVocab] = word[0];
-         this->sizeVocab+=1;
-         this->words = newList;*/
-        this->words->push_back(word);
-
+    bool f = false;
+    for (int i = 0; i < this->words.Size(); i++)
+        if (this->words.getVal(i) == word) {
+            f = true;
+            break;
     }
-    //delete newList;
+    if (!f) this->words.push_back(word);
 }
 
 Word WordList::GetWord(const int &i)
 {
-    /*Word *word = new Word();
-    word[0] = this->words[i];*/
-
-    return this->words[0][i];
+    return this->words.getVal(i);
 }
 
 void WordList::Sort()
@@ -306,52 +269,11 @@ void WordList::Sort()
 
 }
 
-int WordList::Size()
+int WordList::SizeVocab()
 {
-    return this->words->Size();
+    return this->words.Size();
 }
-/*
-void WordList::deleteWords()
-{
-    if (this->words)
-    {
-        delete [] this->words;
-        this->words = nullptr;
-    }
 
-}*/
 
-bool WordList::CheckWord(Word &word)
-{
-    /*if (this->words)
-    {
-        bool f=false;
-        for (int i =0; i<this->words.Size(); i++)
-        {
-            if (this->words[i].getWLength() == word->getWLength())
-            {
-                f = false;
-                for (int j =0; j<word->getWLength(); j++)
-                {
-                    if (this->words[i].getC(j) == word->getC(j)){
-                        f = true;
-                    }
-                    else f = false;
-                }
-                if (f) return f;
-            }
-        }
-        return f;
-    }
-    else {
-        return false;
-    }*/
-    bool f = false;
-    for (int i = 0; i < this->words->Size(); i++)
-        if (this->words[0][i] == word) {
-            f = true;
-            break;
-        }
-    return f;
 
-}
+
