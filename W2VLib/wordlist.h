@@ -39,6 +39,8 @@ public:
     int getVLength();
     void addInstance();
     void decInstance();
+    int getInstance();
+
 
 private:
     void deleteWord();
@@ -47,18 +49,21 @@ private:
 
 
 class Sentence {
-    Vec<Word> words;
     Vec<int> IDs;
-
-
 public:
     Sentence(void);
+    Sentence(Vec<int> &wordIDs);
     ~Sentence();
-
-    void addWord(const Word &word);
-    void delWord(const int &i);
-    Vec<Word> getWords();
+    void setWordID(const int &id_old, const int &id_new);
+    void addWord(const int &wordID);
+    void delWord(const int &wordID);
+    int Size();
     Vec<int> getIDs();
+    void Clear();
+    Vec<int> get();
+
+private:
+
 
 
 };
@@ -69,12 +74,14 @@ class WordList
 {
     Vec<Word> words;
     Vec<Sentence> sentences;
+    Sentence cur_Sent;
     TypeWords language;
     TypeWords type_tokens;
     bool other_chars;
     int chars_interval[2];
     int stop_line;
     TypeWords encoding;
+
 
 
 public:
@@ -84,7 +91,7 @@ public:
     ~WordList();
 
     Word GetWord(const int &i);
-    void AddWord(const Word &word, const bool &sort = true);
+    void AddWord(Vec<int> &word, const bool &sort = false);
     void SetWord(const int &i, const Word &word);
     void DelWord(const int &i);
     int* getX(const int &i);
@@ -93,6 +100,8 @@ public:
     void Clear();
     int SizeVocab();
     int SizeSententies();
+    Vec<Word> getVocab();
+    Vec<Sentence> getSentences();
 
 private:
     //void AddXY(int *x, int *y);

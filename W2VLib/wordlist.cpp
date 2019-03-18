@@ -12,7 +12,7 @@ Word::Word(void)
 
 
     this->vec = nullptr;*/
-    this->instance = 0;
+    this->instance = 1;
     this->id = -1;
    // this->word = new Vec<int>();
    // this->vec = new Vec<double>();
@@ -34,7 +34,7 @@ Word::Word(const Vec<int> &word)
     this->VecSize = 0;*/
    // this->word = new Vec<int>();
     this->word = word;
-    this->instance = 0;
+    this->instance = 1;
     this->id = -1;
     //this->vec = new Vec<double>();
 
@@ -78,6 +78,11 @@ Word& Word::operator=(const Word &w)
     return *this;
 }
 
+Vec<int> Word::get()
+{
+    return this->word;
+}
+
 bool Word::operator==(const Word &w)
 {
     return this->word == w.word;
@@ -92,12 +97,6 @@ void Word::addChar(const int &ch)
 {   
     this->word.push_back(ch);
 }
-
-Vec<int> Word::get()
-{
-    return this->word;
-}
-
 
 
 void Word::set(const Vec<int> &newWord)
@@ -125,13 +124,16 @@ void Word::decInstance()
 int Word::getC(const int &i)
 {
     if (i < this->word.Size()) {
-        int ret;
-        ret = this->word.getVal(0);
-        return ret;
+
+        return word[i];
     }
     else {
         return -1;
     }
+}
+
+int Word::getInstance(){
+    return this->instance;
 }
 
 //********************************** Sentence ********************************************************
@@ -141,28 +143,52 @@ Sentence::Sentence(void)
 
 }
 
+Sentence::Sentence(Vec<int> &wordIDs)
+{
+   this->IDs = wordIDs;
+}
+
 Sentence::~Sentence()
-{
+{    
 
 }
 
-void Sentence::addWord(const Word &word)
+void Sentence::setWordID(const int &id_old, const int &id_new)
 {
-
+    for (int i=0; i<this->IDs.Size(); i++)
+        if (this->IDs[i] == id_old)
+            this->IDs[i] = id_new;
 }
 
-void Sentence::delWord(const int &i)
-{
-
+int Sentence::Size(){
+    return this->IDs.Size();
 }
 
-Vec<Word> Sentence::getWords()
+void Sentence::addWord(const int &wordID)
 {
-    return this->words;
+    this->IDs.push_back(wordID);
 }
+
+void Sentence::delWord(const int &wordID)
+{
+    for (int j=0; j<this->IDs.Size(); j++)
+        if (this->IDs[j] == wordID){
+            this->IDs.remove(j);
+            j--;
+        }
+}
+
 
 Vec<int> Sentence::getIDs()
 {
+    return this->IDs;
+}
+
+void Sentence::Clear(){
+    this->IDs.clear();
+}
+
+Vec<int> Sentence::get(){
     return this->IDs;
 }
 
@@ -223,6 +249,12 @@ void WordList::textProcessing(Vec<int> &text)
 
     for (int i=0; i<text.Size(); i++)
     {
+        if (i<text.Size()-1 && text[i] == this->stop_line
+                && text[i+1] == this->stop_line){
+            text.remove(i);
+            i--;
+            continue;
+        }
 
         Vec<int> nw;
         nw.push_back(text[i]);
@@ -240,23 +272,39 @@ void WordList::textProcessing(Vec<int> &text)
             }
 
         }
-        Word nWord(nw);
-        AddWord(nWord, false);       
+        if (!first) --i;
+        AddWord(nw, false);
     }
     // Sort();
 }
 
 
 
-void WordList::AddWord(const Word &word, const bool &sort)
+void WordList::AddWord(Vec<int> &word, const bool &sort)
 {
-    bool f = false;
-    for (int i = 0; i < this->words.Size(); i++)
-        if (this->words.getVal(i) == word) {
-            f = true;
-            break;
+
+
+    if (word[0] != this->stop_line){
+        int finded_id=-1;
+        for (int i = 0; i < this->words.Size(); i++)
+            if (this->words[i] == word) {
+               finded_id=i;
+                break;
+        }
+        if (finded_id==-1){
+            this->words.push_back(word);
+            finded_id = this->words.Size()-1;
+        }
+        else {
+            this->words[finded_id].addInstance();
+        }
+        this->cur_Sent.addWord(finded_id);
+
     }
-    if (!f) this->words.push_back(word);
+    else {
+        this->sentences.push_back(this->cur_Sent);
+        this->cur_Sent.Clear();
+    }
 }
 
 Word WordList::GetWord(const int &i)
@@ -274,6 +322,15 @@ int WordList::SizeVocab()
     return this->words.Size();
 }
 
+int WordList::SizeSententies(){
+    return this->sentences.Size();
+}
 
+Vec<Word> WordList::getVocab(){
+    return this->words;
+}
 
+Vec<Sentence> WordList::getSentences(){
+    return this->sentences;
+}
 

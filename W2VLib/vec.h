@@ -26,6 +26,7 @@ public:
     T& operator [](int);
     bool operator==(int);
     void push_back(const T&);
+    T last();
     void clear();
     void create(const int &i);
     void remove(const int &i);
@@ -67,7 +68,7 @@ int Vec<T>::Size(void) const
 template <class  T>
 T& Vec<T>::operator[](int i)
 {
-    return data[i];
+   return data[i];
 }
 
 template <class T>
@@ -202,7 +203,7 @@ template <class  T>
 void Vec<T>::create(const int &i) {
     if (this->data)
         delete[] this->data;
-    size = 0;
+    size = i;
     cap = i;
     data = new T[i];
 }
@@ -238,6 +239,12 @@ void Vec<T>::set(const Vec<T> &v)
     {
         this->data[i] = v[i];
     }
+}
+
+template <class  T>
+T Vec<T>::last()
+{
+    return this->data[this->size-1];
 }
 
 
